@@ -5,8 +5,11 @@ import type { Question } from '../types/level'
 import { useProgressStore } from '../store/progressStore'
 import { useAchievementStore } from '../store/achievementStore'
 import { useCurrentThemeDefinition } from '../themes/themeConfig'
+import type { GitRepoState } from '../types/gitState'
+import { applyGitCommand, createInitialState } from '../utils/gitStateHelpers'
 import GuideCharacter from '../components/GuideCharacter'
 import AchievementToast from '../components/AchievementToast'
+import GitStateVisualizer from '../components/GitStateVisualizer'
 import ButtonFlowQuestionComponent from '../components/questions/ButtonFlowQuestion'
 import SingleChoiceQuestionComponent from '../components/questions/SingleChoiceQuestion'
 import OrderingQuestionComponent from '../components/questions/OrderingQuestion'
@@ -15,10 +18,12 @@ import InputCommandQuestionComponent from '../components/questions/InputCommandQ
 function QuestionRenderer({
   question,
   onQuestionComplete,
+  onAction,
 }: {
   question: Question
   index: number
   onQuestionComplete: (questionId: string) => void
+  onAction?: (actionId: string) => void
 }) {
   const handleComplete = () => {
     onQuestionComplete(question.id)
@@ -30,6 +35,7 @@ function QuestionRenderer({
         <ButtonFlowQuestionComponent
           question={question}
           onComplete={handleComplete}
+          onAction={onAction}
         />
       )
     case 'single-choice':
@@ -75,8 +81,49 @@ export default function LevelPage() {
   const [completedQuestionIds, setCompletedQuestionIds] = useState<string[]>([])
   const [isLevelCompleted, setIsLevelCompleted] = useState(false)
   const [unlockedAchievementId, setUnlockedAchievementId] = useState<string | null>(null)
+  const [repoState, setRepoState] = useState<GitRepoState>(createInitialState())
 
   const isAlreadyCompleted = level ? completedLevelIds.includes(level.id) : false
+
+  // 根据关卡初始化 Git 状态
+  useEffect(() => {
+    if (!level) return
+
+    // 为不同关卡设置初始状态
+    if (level.id === 'level-1') {
+      // Level 1: 空仓库（刚初始化）
+      setRepoState({
+        files: [],
+        commits: [],
+      })
+    } else if (level.id === 'level-2') {
+      // Level 2: 有未跟踪的文件
+      setRepoState({
+        files: [
+          { id: 'file1', name: 'README.md', status: 'untracked' },
+        ],
+        commits: [],
+      })
+    } else if (level.id === 'level-3') {
+      // Level 3: 有已修改的文件
+      setRepoState({
+        files: [
+          { id: 'file1', name: 'src/App.tsx', status: 'modified' },
+        ],
+        commits: [
+          {
+            id: 'commit1',
+            message: 'Initial commit',
+            shortHash: 'a1b2c3d',
+            isHead: true,
+          },
+        ],
+      })
+    } else {
+      // 其他关卡使用空状态
+      setRepoState(createInitialState())
+    }
+  }, [level])
   
   // 生成引导消息
   const getGuideMessage = () => {
@@ -87,6 +134,36 @@ export default function LevelPage() {
     }
     return `本关：${level.title}`
   }
+
+  // 处理按钮操作（用于动态更新 Git 状态）
+  const handleAction = (actionId: string) => {
+    if (!level) return
+
+    // 只在前几个关卡启用动态交互
+    if (['level-2', 'level-3'].includes(level.id)) {
+      let command = ''
+      
+      // 映射按钮 ID 到 Git 命令
+      if (actionId === 'modify') {
+        command = 'modify file1'
+      } else if (actionId === 'add') {
+        command = 'git add .'
+      } else if (actionId === 'add-all') {
+        command = 'git add .'
+      } else if (actionId === 'commit') {
+        command = "git commit -m 'Update files'"
+      } else if (actionId === 'init') {
+        command = 'git init'
+      }
+
+      if (command) {
+        setRepoState((prev) => applyGitCommand(prev, command))
+      }
+    }
+  }
+
+  // 判断是否显示 Git 状态可视化器（前 3 个关卡）
+  const shouldShowGitVisualizer = level && ['level-1', 'level-2', 'level-3'].includes(level.id)
 
   // 初始化：如果关卡已完成，标记所有问题为已完成
   useEffect(() => {
@@ -222,6 +299,17 @@ export default function LevelPage() {
           <h2 className={`text-xl font-semibold ${theme.textClass} mb-4`}>
             问题
           </h2>
+          
+          {/* Git 状态可视化器（仅在前 3 个关卡显示） */}
+          {shouldShowGitVisualizer && (
+            <div className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
+              <GitStateVisualizer
+                state={repoState}
+                title="当前 Git 仓库状态（示意）"
+              />
+            </div>
+          )}
+
           <div className="space-y-6">
             {level.questions.map((question, index) => (
               <div key={question.id}>
@@ -242,6 +330,7 @@ export default function LevelPage() {
                   question={question}
                   index={index}
                   onQuestionComplete={handleQuestionComplete}
+                  onAction={shouldShowGitVisualizer ? handleAction : undefined}
                 />
               </div>
             ))}

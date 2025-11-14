@@ -4,11 +4,13 @@ import type { ButtonFlowQuestion } from '../../types/level'
 interface ButtonFlowQuestionProps {
   question: ButtonFlowQuestion
   onComplete?: () => void
+  onAction?: (actionId: string) => void
 }
 
 export default function ButtonFlowQuestionComponent({
   question,
   onComplete,
+  onAction,
 }: ButtonFlowQuestionProps) {
   const [clickedSequence, setClickedSequence] = useState<string[]>([])
   const [isComplete, setIsComplete] = useState(false)
@@ -20,6 +22,9 @@ export default function ButtonFlowQuestionComponent({
     const newSequence = [...clickedSequence, buttonId]
     setClickedSequence(newSequence)
     setHasError(false)
+
+    // 触发 onAction 回调（用于更新 Git 状态可视化器）
+    onAction?.(buttonId)
 
     // 检查是否完成
     if (newSequence.length === question.expectedSequence.length) {
