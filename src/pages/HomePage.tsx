@@ -2,6 +2,10 @@ import { useEffect } from 'react'
 import { getAllLevels } from '../data/levels'
 import { Link } from 'react-router-dom'
 import { useProgressStore } from '../store/progressStore'
+import { useSettingsStore } from '../store/settingsStore'
+import { useCurrentThemeDefinition } from '../themes/themeConfig'
+import GuideCharacter from '../components/GuideCharacter'
+import OnboardingModal from '../components/OnboardingModal'
 
 export default function HomePage() {
   const levels = getAllLevels()
@@ -11,6 +15,8 @@ export default function HomePage() {
     currentRecommendedLevelId,
     initialize,
   } = useProgressStore()
+  const { hasSeenIntro } = useSettingsStore()
+  const theme = useCurrentThemeDefinition()
 
   // 初始化进度
   useEffect(() => {
@@ -19,12 +25,23 @@ export default function HomePage() {
   }, [initialize, levels])
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className={`min-h-screen ${theme.backgroundClass}`}>
+      <OnboardingModal />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+        <div className="mb-6">
+          <GuideCharacter
+            mood={hasSeenIntro ? 'neutral' : 'welcome'}
+            message={
+              hasSeenIntro
+                ? '继续从推荐关卡开始挑战吧！'
+                : '欢迎来到 Git 闯关教室！从第一关开始试试吧～'
+            }
+          />
+        </div>
+        <h1 className={`text-3xl font-bold ${theme.textClass} mb-6`}>
           欢迎来到 Git 学习游戏
         </h1>
-        <p className="text-gray-600 dark:text-gray-300 mb-8">
+        <p className={`${theme.textClass} opacity-80 mb-8`}>
           选择一个关卡开始学习 Git 命令吧！
         </p>
         <div className="space-y-4 mb-8">
@@ -37,7 +54,7 @@ export default function HomePage() {
               <div
                 key={level.id}
                 className={`
-                  bg-white dark:bg-gray-800 p-6 rounded-lg shadow
+                  ${theme.surfaceClass} p-6 rounded-lg shadow
                   ${!isUnlocked ? 'opacity-60' : ''}
                   ${isRecommended ? 'ring-2 ring-blue-500' : ''}
                 `}
@@ -45,7 +62,7 @@ export default function HomePage() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      <h2 className={`text-xl font-semibold ${theme.textClass}`}>
                         {level.order}. {level.title}
                       </h2>
                       {isCompleted && (
@@ -54,17 +71,17 @@ export default function HomePage() {
                         </span>
                       )}
                       {isRecommended && !isCompleted && (
-                        <span className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">
+                        <span className={`px-2 py-1 text-xs ${theme.badgeClass} rounded-full`}>
                           📍 推荐
                         </span>
                       )}
                       {!isUnlocked && (
-                        <span className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full">
+                        <span className={`px-2 py-1 text-xs ${theme.badgeClass} rounded-full opacity-60`}>
                           🔒 锁定
                         </span>
                       )}
                     </div>
-                    <p className="text-gray-600 dark:text-gray-300 mb-3">
+                    <p className={`${theme.textClass} opacity-80 mb-3`}>
                       {level.description}
                     </p>
                     {level.tags && level.tags.length > 0 && (
@@ -72,14 +89,14 @@ export default function HomePage() {
                         {level.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                            className={`px-2 py-1 text-xs ${theme.badgeClass} rounded`}
                           >
                             {tag}
                           </span>
                         ))}
                       </div>
                     )}
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className={`text-sm ${theme.textClass} opacity-60`}>
                       包含 {level.questions.length} 个问题
                     </p>
                   </div>

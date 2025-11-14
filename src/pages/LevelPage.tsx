@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { getLevelById } from '../data/levels'
 import type { Question } from '../types/level'
 import { useProgressStore } from '../store/progressStore'
+import { useCurrentThemeDefinition } from '../themes/themeConfig'
+import GuideCharacter from '../components/GuideCharacter'
 import ButtonFlowQuestionComponent from '../components/questions/ButtonFlowQuestion'
 import SingleChoiceQuestionComponent from '../components/questions/SingleChoiceQuestion'
 import OrderingQuestionComponent from '../components/questions/OrderingQuestion'
@@ -66,10 +68,21 @@ export default function LevelPage() {
   const level = id ? getLevelById(id) : undefined
   
   const { completedLevelIds, completeLevel, currentRecommendedLevelId } = useProgressStore()
+  const theme = useCurrentThemeDefinition()
   const [completedQuestionIds, setCompletedQuestionIds] = useState<string[]>([])
   const [isLevelCompleted, setIsLevelCompleted] = useState(false)
 
   const isAlreadyCompleted = level ? completedLevelIds.includes(level.id) : false
+  
+  // 生成引导消息
+  const getGuideMessage = () => {
+    if (!level) return ''
+    const tags = level.tags || []
+    if (tags.length > 0) {
+      return `本关将练习：${tags.join('、')}`
+    }
+    return `本关：${level.title}`
+  }
 
   // 初始化：如果关卡已完成，标记所有问题为已完成
   useEffect(() => {
@@ -125,19 +138,27 @@ export default function LevelPage() {
     : 0
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className={`min-h-screen ${theme.backgroundClass}`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <Link
             to="/"
-            className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 mb-4 inline-block"
+            className={`${theme.accentClass} hover:opacity-80 mb-4 inline-block`}
           >
             ← 返回首页
           </Link>
         </div>
+        
+        <div className="mb-6">
+          <GuideCharacter
+            mood="hint"
+            message={getGuideMessage()}
+          />
+        </div>
+        
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className={`text-3xl font-bold ${theme.textClass} mb-2`}>
               {level.title}
             </h1>
             {isAlreadyCompleted && (
@@ -147,7 +168,7 @@ export default function LevelPage() {
             )}
           </div>
         </div>
-        <p className="text-gray-600 dark:text-gray-300 mb-6">
+        <p className={`${theme.textClass} opacity-80 mb-6`}>
           {level.description}
         </p>
         {level.tags && level.tags.length > 0 && (
@@ -155,7 +176,7 @@ export default function LevelPage() {
             {level.tags.map((tag) => (
               <span
                 key={tag}
-                className="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                className={`px-2 py-1 text-xs ${theme.badgeClass} rounded`}
               >
                 {tag}
               </span>
@@ -166,10 +187,10 @@ export default function LevelPage() {
         {/* 进度条 */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span className={`text-sm font-medium ${theme.textClass} opacity-80`}>
               进度: {completedQuestionIds.length} / {level.questions.length}
             </span>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className={`text-sm ${theme.textClass} opacity-60`}>
               {progressPercentage}%
             </span>
           </div>
@@ -181,18 +202,18 @@ export default function LevelPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <div className={`${theme.surfaceClass} p-6 rounded-lg shadow`}>
+          <h2 className={`text-xl font-semibold ${theme.textClass} mb-4`}>
             问题
           </h2>
           <div className="space-y-6">
             {level.questions.map((question, index) => (
               <div key={question.id}>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  <span className={`text-sm font-semibold ${theme.textClass} opacity-80`}>
                     问题 {index + 1}
                   </span>
-                  <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">
+                  <span className={`text-xs px-2 py-1 ${theme.badgeClass} rounded`}>
                     {question.type}
                   </span>
                   {completedQuestionIds.includes(question.id) && (
