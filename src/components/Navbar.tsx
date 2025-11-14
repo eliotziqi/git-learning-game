@@ -15,6 +15,18 @@ export default function Navbar() {
             Git 学习游戏
           </Link>
           <div className="flex items-center gap-4">
+            <Link
+              to="/challenge"
+              className={`px-3 py-1 text-sm ${theme.accentClass} hover:opacity-80 transition-opacity`}
+            >
+              随机挑战
+            </Link>
+            <Link
+              to="/achievements"
+              className={`px-3 py-1 text-sm ${theme.accentClass} hover:opacity-80 transition-opacity`}
+            >
+              成就
+            </Link>
             <ThemeSwitcher />
             <div className={`text-xs px-2 py-1 ${theme.badgeClass} rounded-full`}>
               模式: {learningMode}

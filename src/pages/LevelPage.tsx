@@ -3,8 +3,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { getLevelById } from '../data/levels'
 import type { Question } from '../types/level'
 import { useProgressStore } from '../store/progressStore'
+import { useAchievementStore } from '../store/achievementStore'
 import { useCurrentThemeDefinition } from '../themes/themeConfig'
 import GuideCharacter from '../components/GuideCharacter'
+import AchievementToast from '../components/AchievementToast'
 import ButtonFlowQuestionComponent from '../components/questions/ButtonFlowQuestion'
 import SingleChoiceQuestionComponent from '../components/questions/SingleChoiceQuestion'
 import OrderingQuestionComponent from '../components/questions/OrderingQuestion'
@@ -68,9 +70,11 @@ export default function LevelPage() {
   const level = id ? getLevelById(id) : undefined
   
   const { completedLevelIds, completeLevel, currentRecommendedLevelId } = useProgressStore()
+  const { unlockAchievement, isUnlocked } = useAchievementStore()
   const theme = useCurrentThemeDefinition()
   const [completedQuestionIds, setCompletedQuestionIds] = useState<string[]>([])
   const [isLevelCompleted, setIsLevelCompleted] = useState(false)
+  const [unlockedAchievementId, setUnlockedAchievementId] = useState<string | null>(null)
 
   const isAlreadyCompleted = level ? completedLevelIds.includes(level.id) : false
   
@@ -106,6 +110,12 @@ export default function LevelPage() {
         // 标记关卡为完成
         completeLevel(level.id)
         setIsLevelCompleted(true)
+        
+        // 检查完成关卡成就
+        if (!isUnlocked('first_level_complete')) {
+          unlockAchievement('first_level_complete')
+          setUnlockedAchievementId('first_level_complete')
+        }
       }
       
       return newCompleted
@@ -139,6 +149,12 @@ export default function LevelPage() {
 
   return (
     <div className={`min-h-screen ${theme.backgroundClass}`}>
+      {unlockedAchievementId && (
+        <AchievementToast
+          achievementId={unlockedAchievementId}
+          onClose={() => setUnlockedAchievementId(null)}
+        />
+      )}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <Link

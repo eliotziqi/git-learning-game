@@ -1,4 +1,4 @@
-import type { Level } from '../types/level'
+import type { Level, Question } from '../types/level'
 
 export const levels: Level[] = [
   {
@@ -241,5 +241,10 @@ export function getLevelById(id: string): Level | undefined {
 // 获取所有关卡（按顺序排序）
 export function getAllLevels(): Level[] {
   return [...levels].sort((a, b) => a.order - b.order)
+}
+
+// 获取所有问题（用于随机挑战）
+export function getAllQuestions(): Question[] {
+  return levels.flatMap((level) => level.questions)
 }
 
