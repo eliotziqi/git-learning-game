@@ -1,73 +1,114 @@
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+ ██████╗ ██╗████████╗   ██╗     ███████╗ █████╗ ██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗ 
+██╔════╝ ██║╚══██╔══╝   ██║     ██╔════╝██╔══██╗██╔══██╗████╗  ██║██║████╗  ██║██╔════╝ 
+██║  ███╗██║   ██║      ██║     █████╗  ███████║██████╔╝██╔██╗ ██║██║██╔██╗ ██║██║  ███╗
+██║   ██║██║   ██║      ██║     ██╔══╝  ██╔══██║██╔══██╗██║╚██╗██║██║██║╚██╗██║██║   ██║
+╚██████╔╝██║   ██║      ███████╗███████╗██║  ██║██║  ██║██║ ╚████║██║██║ ╚████║╚██████╔╝
+ ╚═════╝ ╚═╝   ╚═╝      ╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+# 🎮 Git Learning Game
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+> 一个通过闯关、互动题目和可视化学习 Git 的小游戏
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+你可以通过模拟命令、排序步骤、选择题、按钮流程等方式学习 Git 的工作原理。  
+不仅有多主题 UI、可爱的引导角色，还有成就系统与随机挑战，让 Git 学习变得像玩游戏一样有趣。
+
+# 🔗 在线试玩
+
+👉 **[https://eliotziqi.github.io/git-learning-game/](https://eliotziqi.github.io/git-learning-game/)**
+
+# ✨ 功能概览
+
+多关卡 Git 学习流程：循序渐进、自动解锁、进度本地保存  
+四大主题 UI：Modern / Pixel / Cartoon / Minimal，可随时切换  
+多类型题目互动：按钮模拟 Git 操作、单选、排序、命令输入  
+成就系统：收集成就、自动弹窗提示  
+随机挑战模式：计时、连击、统计结果页  
+Git 状态可视化器：工作区 / 暂存区 / 提交历史动态展示，模拟真实 Git 行为
+
+# 🛠️ 技术栈
+
+![React](https://img.shields.io/badge/React-18-blue?logo=react)  
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)  
+![Vite](https://img.shields.io/badge/Vite-4-purple?logo=vite)  
+![Tailwind](https://img.shields.io/badge/TailwindCSS-4-06B6D4?logo=tailwindcss)  
+![Zustand](https://img.shields.io/badge/Zustand-State%20Management-orange)  
+![GitHub Pages](https://img.shields.io/badge/Deploy-GitHub%20Pages-black?logo=github)
+
+# 📸 项目截图（占位）
+
+-   关卡页面
+    
+-   题目互动示例
+    
+-   Random Challenge 模式
+    
+-   Git 状态可视化器
+    
+-   主题切换示例
+    
+-   成就页面
+    
+
+# 📁 目录结构
+
 ```
+git-learning-game/
+├── public/
+├── src/
+│   ├── components/
+│   │   ├── questions/           # 四种题目类型组件
+│   │   ├── GuideCharacter.tsx
+│   │   ├── ThemeSwitcher.tsx
+│   │   └── AchievementToast.tsx
+│   ├── data/
+│   │   └── levels.ts            # 关卡数据与题库
+│   ├── pages/
+│   │   ├── HomePage.tsx
+│   │   ├── LevelPage.tsx
+│   │   ├── ChallengePage.tsx
+│   │   └── AchievementsPage.tsx
+│   ├── store/
+│   │   ├── progressStore.ts
+│   │   ├── settingsStore.ts
+│   │   └── achievementStore.ts
+│   ├── themes/
+│   │   └── themeConfig.ts       # 多主题配置
+│   ├── git/
+│   │   ├── gitState.ts
+│   │   └── gitStateHelpers.ts   # Git 状态模拟库
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── index.css
+├── package.json
+└── README.md
+
+```
+
+# 🤝 贡献指南
+
+欢迎任何形式的贡献！  
+你可以：
+
+-   提交新的关卡或题目
+    
+-   改进 UI / 动画
+    
+-   提交 Bug 修复
+    
+-   添加更多 Git 可视化功能
+    
+-   编写新主题或角色外观
+    
+
+贡献流程：
+
+```bash
+fork → clone → 新建 feature 分支 → 提交 PR
+
+```
+
+# 📄 License
+
+本项目使用 [**MIT License**](./LICENSE)  
