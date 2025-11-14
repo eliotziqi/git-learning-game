@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useSettingsStore } from '../store/settingsStore'
 
 export default function Navbar() {
+  const { theme, learningMode } = useSettingsStore()
+
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -10,12 +13,10 @@ export default function Navbar() {
           </Link>
           <div className="flex items-center gap-4">
             <div className="text-sm text-gray-600 dark:text-gray-300">
-              {/* 主题切换占位 */}
-              主题: 待实现
+              主题: {theme}
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-300">
-              {/* 模式切换占位 */}
-              模式: 待实现
+              模式: {learningMode}
             </div>
           </div>
         </div>
