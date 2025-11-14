@@ -1,69 +1,61 @@
 import { useParams, Link } from 'react-router-dom'
 import { getLevelById } from '../data/levels'
 import type { Question } from '../types/level'
+import ButtonFlowQuestionComponent from '../components/questions/ButtonFlowQuestion'
+import SingleChoiceQuestionComponent from '../components/questions/SingleChoiceQuestion'
+import OrderingQuestionComponent from '../components/questions/OrderingQuestion'
+import InputCommandQuestionComponent from '../components/questions/InputCommandQuestion'
 
-function QuestionPlaceholder({ question, index }: { question: Question; index: number }) {
-  return (
-    <div className="mb-6 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
-          问题 {index + 1}
-        </span>
-        <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">
-          {question.type}
-        </span>
-      </div>
-      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
-        {question.title}
-      </h3>
-      {question.description && (
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-          {question.description}
-        </p>
-      )}
-      {question.type === "single-choice" && (
-        <div className="mt-2">
-          <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-            {question.question}
-          </p>
-          <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400">
-            {question.options.map((opt, i) => (
-              <li key={i}>{opt}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {question.type === "input" && (
-        <p className="text-sm text-gray-700 dark:text-gray-300">
-          {question.prompt}
-        </p>
-      )}
-      {question.type === "button-flow" && (
-        <div className="mt-2">
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-            期望顺序: {question.expectedSequence.join(" → ")}
-          </p>
-          <div className="flex gap-2 flex-wrap">
-            {question.buttons.map((btn) => (
-              <span
-                key={btn.id}
-                className="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded"
-              >
-                {btn.label}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-      {question.type === "ordering" && (
-        <div className="mt-2">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            步骤数量: {question.steps.length}
+function QuestionRenderer({
+  question,
+  index,
+}: {
+  question: Question
+  index: number
+}) {
+  const handleComplete = () => {
+    // Phase 3: 暂时不处理完成回调，Phase 4 会添加进度跟踪
+    console.log(`Question ${question.id} completed`)
+  }
+
+  switch (question.type) {
+    case 'button-flow':
+      return (
+        <ButtonFlowQuestionComponent
+          question={question}
+          onComplete={handleComplete}
+        />
+      )
+    case 'single-choice':
+      return (
+        <SingleChoiceQuestionComponent
+          question={question}
+          onComplete={handleComplete}
+        />
+      )
+    case 'ordering':
+      return (
+        <OrderingQuestionComponent
+          question={question}
+          onComplete={handleComplete}
+        />
+      )
+    case 'input':
+      return (
+        <InputCommandQuestionComponent
+          question={question}
+          onComplete={handleComplete}
+        />
+      )
+    default:
+      return (
+        <div className="p-4 bg-red-100 dark:bg-red-900 rounded-lg">
+          <p className="text-red-800 dark:text-red-200">
+            未知的问题类型: {(question as any).type}
           </p>
         </div>
-      )}
-    </div>
-  )
+      )
+  }
 }
 
 export default function LevelPage() {
@@ -122,15 +114,21 @@ export default function LevelPage() {
         )}
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            问题列表 ({level.questions.length} 个)
+            问题
           </h2>
-          <div className="space-y-4">
+          <div className="space-y-6">
             {level.questions.map((question, index) => (
-              <QuestionPlaceholder
-                key={question.id}
-                question={question}
-                index={index}
-              />
+              <div key={question.id}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+                    问题 {index + 1}
+                  </span>
+                  <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">
+                    {question.type}
+                  </span>
+                </div>
+                <QuestionRenderer question={question} index={index} />
+              </div>
             ))}
           </div>
         </div>
